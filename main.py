@@ -1,5 +1,6 @@
 import pprint
 import pickle
+import os
 from repo import Repo
 from github import Github
 
@@ -13,12 +14,14 @@ except:
 
 stars = 1000
 
-g = Github()
+# read env var for github token
+token = os.getenv('GITHUB_TOKEN')
+
+g = Github(token)
 result = g.search_repositories(query=f"stars:>{stars}", sort='stars', order='desc')
 count = 0
 for repo in result:
-    print(repo.stargazers_count, repo.html_url)
-    repos.append(Repo(repo_link = repo.html_url,
+    repos.append(Repo(repo_full_name = repo.full_name,
                       num_stars = repo.stargazers_count,
                       has_dependabot_file = False,
                       has_dependabot_commits = False,
