@@ -1,4 +1,6 @@
 __pycache__/
 .python-version
 .env
+
 local_db
+db_dump.json
