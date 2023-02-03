@@ -1,8 +1,5 @@
-import pprint
 import pickle
 import os
-import json 
-from repo import Repo
 from github import Github
 from read_basic_repo_info import read_basic_repo_info
 from read_advanced_repo_info import read_advanced_repo_info
@@ -10,6 +7,10 @@ from create_forks_and_prs import create_forks_and_prs
 from create_real_prs import create_real_prs
 from dump_db import dump_db
 import sys
+import warnings
+
+# ignore warnings
+warnings.filterwarnings('ignore')
 
 # load local_db
 repos = dict()
@@ -32,7 +33,8 @@ arguments = sys.argv
 match arguments[1]:
     # Read basic repo info for relevant repos
     case "read_basic_repo_info":
-        read_basic_repo_info(github_client, repos)
+        max_count = arguments[2]
+        read_basic_repo_info(github_client, repos, max_count)
     case "read_advanced_info":
         read_advanced_repo_info(github_client, repos)
     case "create_forks_and_prs":
