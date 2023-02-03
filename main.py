@@ -35,7 +35,7 @@ match arguments[1]:
     case "read_basic_repo_info":
         max_count = int(arguments[2])
         read_basic_repo_info(github_client, repos, max_count)
-    case "read_advanced_info":
+    case "read_advanced_repo_info":
         read_advanced_repo_info(github_client, repos)
     case "create_forks_and_prs":
         create_forks_and_prs(github_client, repos)
