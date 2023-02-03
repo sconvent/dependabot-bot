@@ -4,7 +4,7 @@ class Repo:
     # mapping of all Repositories to their Repo objects
     def __init__(self, repo_info: Repository):
         self.name = repo_info.name
-        self.repo_full_name = repo_info.full_name
+        self.full_name = repo_info.full_name
         self.num_stars = repo_info.stargazers_count
         self.archived = repo_info.archived
         self.created_at = repo_info.created_at
@@ -21,7 +21,10 @@ class Repo:
         self.default_branch = repo_info.default_branch
         self.id = repo_info.id
 
-        #self.num_stars = repo_info.Repository.
+        self.has_advanced_info = False
+
+        self.languages = None
+
         #self.has_dependabot_commits = has_dependabot_commits
         #self.has_renovate_config = has_renovate_config
         #self.has_renovate_commits = has_renovate_commits
