@@ -15,8 +15,8 @@ class Repo:
         self.mirror_url = repo_info.mirror_url
         self.open_issues_count = repo_info.open_issues_count
         self.ssh_url = repo_info.ssh_url
+        self.html_url = repo_info.html_url
         self.updated_at = repo_info.updated_at
-        self.url = repo_info.url
         self.watchers_count = repo_info.watchers_count
         self.default_branch = repo_info.default_branch
         self.id = repo_info.id
