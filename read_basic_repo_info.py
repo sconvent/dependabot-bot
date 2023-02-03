@@ -11,4 +11,7 @@ def read_basic_repo_info(github_client, repos, max_count):
             break
         if repo.full_name not in repos:
             repos[repo.full_name] = Repo(repo_info = repo)
+            print(f"{count}: Added repo {repo.full_name} to db")
+        else:
+            print(f"{count}: Repo {repo.full_name} already in db")
         count += 1
