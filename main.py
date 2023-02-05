@@ -25,9 +25,9 @@ token = os.getenv('GITHUB_TOKEN')
 
 # create github client
 if token is None:
-    github_client = Github()
+    github_client = Github(per_page=100)
 else:
-    github_client = Github(token)
+    github_client = Github(per_page=100, login_or_token=token)
 
 arguments = sys.argv
 match arguments[1]:
