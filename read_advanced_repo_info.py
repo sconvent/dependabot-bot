@@ -91,10 +91,15 @@ def find_files(github_client, repo, languages, filename):
         # search for filename
         result = github_client.search_code(query=f"repo:{repo.full_name} filename:{filename}")
         relevant_files = []
+        count = 0
         for file in result:
             if file.path == filename or file.path.endswith("/"+filename):
                 print(f"Found filename for repo {repo.full_name} at /{file.path}")
                 relevant_files.append("/"+file.path)
+            count += 1
+            if count > 50:
+                # No more than 50 results
+                break
             # To avoid rate limit
             time.sleep(0.1)
         # To avoid rate limit
