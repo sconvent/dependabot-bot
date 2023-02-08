@@ -3,7 +3,7 @@ import time
 
 def read_advanced_repo_info(github_client: Github, repos):
     for repo in repos.values():
-        if repo.has_advanced_info:
+        if not repo.has_advanced_info:
             print(f"Reading advanced info for repo {repo.full_name}")
             repo_info = github_client.get_repo(repo.full_name)
 
@@ -101,9 +101,7 @@ def find_files(github_client, repo, languages, filename):
                 # No more than 50 results
                 break
             # To avoid rate limit
-            time.sleep(0.1)
-        # To avoid rate limit
-        time.sleep(1)
+            time.sleep(2)
         return relevant_files
     else:
         return []
