@@ -1,9 +1,37 @@
 from github import Github
 import time
+import requests
+import zipfile
+import os
 
 def read_advanced_repo_info(github_client: Github, repos):
     for repo in repos.values():
-        if not repo.has_advanced_info:
+        if repo.has_advanced_info and len(repo.languages) > 0:
+
+            # Download if not already downloaded
+            try:
+                with open(f"repos/{repo.full_name}.zip", "rb") as f:
+                    print(f"Repo {repo.full_name} already downloaded")
+            except:
+                print(f"Downloading repo {repo.full_name}")
+                link = f"https://github.com/{repo.full_name}/archive/refs/heads/{repo.default_branch}.zip"
+                content = requests.get(link, allow_redirects=True).content
+
+                # create folder if not exists
+                try:
+                    os.mkdir(f"repos")
+                except:
+                    pass
+
+                # save file
+                file_name = f"repos/{repo.full_name.replace('/', '_')}.zip"
+                with open(file_name, "wb") as f:
+                    f.write(content)
+
+                # unzip file
+                with zipfile.ZipFile(file_name, 'r') as zip_ref:
+                    zip_ref.extractall(f"repos/{repo.full_name}")
+
             print(f"Reading advanced info for repo {repo.full_name}")
             repo_info = github_client.get_repo(repo.full_name)
 
@@ -85,6 +113,7 @@ def read_advanced_repo_info(github_client: Github, repos):
 
 # TODO: Match with regex
 def find_files(github_client, repo, languages, filename):
+    # TODO: Use downloaded files instead of API
     # Check if repo uses any of the given languages
     languages_intersection = [language for language in languages if language in repo.languages]
     if len(languages_intersection) > 0: 
