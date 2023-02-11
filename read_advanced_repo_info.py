@@ -10,7 +10,7 @@ def read_advanced_repo_info(github_client: Github, repos):
         pass
 
     for repo in repos.values():
-        if repo.has_advanced_info and len(repo.languages) > 0:
+        if not repo.has_advanced_info and len(repo.languages) > 0:
 
             # Check if folder exists
             folder_path = f"repos/{repo.full_name.replace('/', '_')}"
