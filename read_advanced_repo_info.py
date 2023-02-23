@@ -2,6 +2,7 @@ from github import Github
 import os
 import pathlib
 import shutil
+import pickle
 
 def read_advanced_repo_info(github_client: Github, repos):
     # potentially delete folder
@@ -13,8 +14,16 @@ def read_advanced_repo_info(github_client: Github, repos):
     # create folder
     os.mkdir("repos")
 
+    count = 0
     for repo in repos.values():
         if not repo.has_advanced_info or len(repo.languages) > 0:
+            # save local_db every 50 repos
+            count += 1
+            if count % 50 == 0:
+                # save local_db
+                with(open('local_db', 'wb')) as f:
+                    pickle.dump(repos, f)
+
 
             # Check if folder exists
             folder_path = f"repos/{repo.full_name.replace('/', '_')}"
