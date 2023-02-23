@@ -1,13 +1,17 @@
 from github import Github
 import os
 import pathlib
+import shutil
 
 def read_advanced_repo_info(github_client: Github, repos):
-    # create folder if not exists
+    # potentially delete folder
     try:
-        os.mkdir(f"repos")
+        shutil.rmtree("repos")
     except:
         pass
+
+    # create folder
+    os.mkdir("repos")
 
     for repo in repos.values():
         if not repo.has_advanced_info or len(repo.languages) > 0:
@@ -102,6 +106,9 @@ def read_advanced_repo_info(github_client: Github, repos):
             repo.has_advanced_info = True
         else:
             print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")
+
+        # Delete folder
+        shutil.rmtree(folder_path)
         
 
 def find_files(repo, languages, filename):
