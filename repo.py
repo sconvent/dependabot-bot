@@ -19,6 +19,7 @@ class Repo:
         self.updated_at = repo_info.updated_at
         self.watchers_count = repo_info.watchers_count
         self.default_branch = repo_info.default_branch
+        self.size = repo_info.size
         self.id = repo_info.id
 
         self.has_advanced_info = False
