@@ -113,12 +113,11 @@ def read_advanced_repo_info(github_client: Github, repos):
             repo.activity = repo_info.get_stats_participation().all
             
             repo.has_advanced_info = True
-        else:
-            print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")
 
-        # Delete folder
-        shutil.rmtree(folder_path)
-        
+            # Delete folder
+            shutil.rmtree(folder_path)
+        else:
+            print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")        
 
 def find_files(repo, languages, filename):
     # Check if repo uses any of the given languages
