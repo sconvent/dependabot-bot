@@ -16,7 +16,7 @@ def read_advanced_repo_info(github_client: Github, repos):
 
     count = 0
     for repo in repos.values():
-        if not repo.has_advanced_info and len(repo.languages) > 0:
+        if not repo.has_advanced_info:
             # save local_db every 50 repos
             count += 1
             if count % 50 == 0:
