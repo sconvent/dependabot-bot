@@ -5,23 +5,24 @@ def create_forks_and_prs(github_client, repos):
         
         # Check if fork already exists
         try:
-            potentially_existing_fork = github_client.get_repo(f"sconvent/{repo.name}")
+            potentially_existing_fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
             print("Fork already exists")
-            return
         except:
-            pass
-
-        # If not, create fork
-        print(f"Creating fork for {repo.full_name}")
-        github_repo = github_client.get_repo(repo.full_name)
-        github_repo.create_fork()
+            # If not, create fork
+            print(f"Creating fork for {repo.full_name}")
+            github_repo = github_client.get_repo(repo.full_name)
+            github_repo.create_fork()
+            time.sleep(30)
 
         # Get fork
-        fork = github_client.get_repo(f"sconvent/{repo.name}")
+        fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+        # Get default branch
+        print(fork.default_branch)
+        sha = fork.get_branch(fork.default_branch).commit.sha
 
         # Create branch
         print(f"Creating branch for {repo.full_name}")
-        fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=repo.sha)
+        fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
 
         # Create dependabot.yml
         print(f"Creating dependabot.yml for {repo.full_name}")
@@ -31,4 +32,4 @@ def create_forks_and_prs(github_client, repos):
         # Not yet implemented
 
         # Wait 60 seconds
-        time.sleep(60)
+        time.sleep(30)
