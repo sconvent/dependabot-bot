@@ -21,9 +21,14 @@ updates:
     )
 
 def create_forks_and_prs(github_client, repos, dry_run):
-    # Todo: Implement dry run
-
     for repo in repos.values():
+        if not repo.has_advanced_info:
+            print(f"Skipping {repo.full_name} because it has no advanced info")
+            continue
+
+        if repo.has_dependabot_config or repo.has_renovate_config:
+            print(f"Skipping {repo.full_name} because it already has dependabot or renovate config")
+            continue
 
         if not dry_run:
             # Check if fork already exists
