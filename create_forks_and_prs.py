@@ -9,13 +9,15 @@ def render_dependabot_config(configs):
     return pystache.render(
         """
 version: 2
+schedule:
+  interval: "weekly"
+  time: "03:00"
+  day: "monday"
+  timezone: "America/New_York"
 updates:
 {{#configs}}
   - package-ecosystem: "{{ecosystem}}"
     directory: "{{directory}}"
-    schedule:
-      interval: "weekly"
-
 {{/configs}}
         """,
         {'configs': configs},
