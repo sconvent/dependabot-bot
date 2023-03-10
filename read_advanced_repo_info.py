@@ -106,7 +106,7 @@ def read_advanced_repo_info(github_client: Github, repos):
             #repo_info.get_pulls
 
             # Get info whether repo has Renovate config
-            repo.renovate_config_files = find_files(repo, [""], ".github/renovate.json")
+            repo.renovate_config_files = find_files(repo, [""], "./renovate.json")
             repo.has_renovate_config = len(repo.renovate_config_files) > 0
 
             # Get info on activity of repo
