@@ -59,8 +59,6 @@ def create_forks_and_prs(github_client, repos, dry_run):
             fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
 
         # Create dependabot.yml
-        print(f"Creating dependabot.yml for {repo.full_name}")
-        # Todo: Add more ecosystems
         configs = \
         [{'ecosystem': 'npm', 'directory': extract_path(path)} for path in repo.package_json_files] \
         + [{'ecosystem': 'maven', 'directory': extract_path(path)} for path in repo.pom_xml_files] \
@@ -70,8 +68,17 @@ def create_forks_and_prs(github_client, repos, dry_run):
         + [{'ecosystem': 'cargo', 'directory': extract_path(path)} for path in repo.cargo_toml_files] \
         + [{'ecosystem': 'composer', 'directory': extract_path(path)} for path in repo.composer_json_files] \
         + [{'ecosystem': 'nuget', 'directory': extract_path(path)} for path in repo.csproj_files] \
-        + [{'ecosystem': 'docker', 'directory': extract_path(path
-    open-pull-requests-limit: 10
+        + [{'ecosystem': 'docker', 'directory': extract_path(path)} for path in repo.dockerfile_files] \
+        + [{'ecosystem': 'submodules', 'directory': extract_path(path)} for path in repo.gitmodules_files] \
+        + [{'ecosystem': 'elixir', 'directory': extract_path(path)} for path in repo.mix_exs_files] \
+        + [{'ecosystem': 'go', 'directory': extract_path(path)} for path in repo.go_mod_files] \
+        + [{'ecosystem': 'terraform', 'directory': extract_path(path)} for path in repo.tf_files] \
+        + [{'ecosystem': 'elm', 'directory': extract_path(path)} for path in repo.elm_json_files]
+
+        content = render_dependabot_config(configs)
+        if dry_run:
+            print("CONTENT:")
+            print(content)
             print("END CONTENT")
         
         if not dry_run:
