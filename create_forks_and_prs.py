@@ -19,6 +19,7 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+
 {{/configs}}
         """,
         {'configs': configs},
@@ -36,6 +37,14 @@ This configuration will ignore major version upgrades. This is because major ver
 This PR was created by the [Project Maintenance Bot](github.com/project-maintenance-bot), a bot that helps with the maintenance of open-source projects.
         """,
         {})
+
+def create_configs(files, ecosystem):
+    configs = [{'ecosystem': ecosystem, 'directory': extract_path(path)} for path in files]
+    # sort by least nested directory and then by length
+    configs.sort(key=lambda x: (x['directory'].count('/'), len(x['directory'])))
+    # maximum number of configs is 3
+    configs = configs[:3]
+    return configs
 
 def create_forks_and_prs(github_client, repos, dry_run):
     for repo in repos.values():
@@ -72,20 +81,25 @@ def create_forks_and_prs(github_client, repos, dry_run):
 
         # Create dependabot.yml
         configs = \
-        [{'ecosystem': 'npm', 'directory': extract_path(path)} for path in repo.package_json_files] \
-        + [{'ecosystem': 'maven', 'directory': extract_path(path)} for path in repo.pom_xml_files] \
-        + [{'ecosystem': 'gradle', 'directory': extract_path(path)} for path in repo.build_gradle_files] \
-        + [{'ecosystem': 'pip', 'directory': extract_path(path)} for path in repo.requirements_txt_files] \
-        + [{'ecosystem': 'bundler', 'directory': extract_path(path)} for path in repo.gemfile_files] \
-        + [{'ecosystem': 'cargo', 'directory': extract_path(path)} for path in repo.cargo_toml_files] \
-        + [{'ecosystem': 'composer', 'directory': extract_path(path)} for path in repo.composer_json_files] \
-        + [{'ecosystem': 'nuget', 'directory': extract_path(path)} for path in repo.csproj_files] \
-        + [{'ecosystem': 'docker', 'directory': extract_path(path)} for path in repo.dockerfile_files] \
-        + [{'ecosystem': 'submodules', 'directory': extract_path(path)} for path in repo.gitmodules_files] \
-        + [{'ecosystem': 'elixir', 'directory': extract_path(path)} for path in repo.mix_exs_files] \
-        + [{'ecosystem': 'go', 'directory': extract_path(path)} for path in repo.go_mod_files] \
-        + [{'ecosystem': 'terraform', 'directory': extract_path(path)} for path in repo.tf_files] \
-        + [{'ecosystem': 'elm', 'directory': extract_path(path)} for path in repo.elm_json_files]
+        create_configs(repo.package_json_files, 'npm') \
+        + create_configs(repo.pom_xml_files, 'maven') \
+        + create_configs(repo.build_gradle_files, 'gradle') \
+        + create_configs(repo.requirements_txt_files, 'pip') \
+        + create_configs(repo.gemfile_files, 'bundler') \
+        + create_configs(repo.cargo_toml_files, 'cargo') \
+        + create_configs(repo.composer_json_files, 'composer') \
+        + create_configs(repo.csproj_files, 'nuget') \
+        + create_configs(repo.dockerfile_files, 'docker') \
+        + create_configs(repo.gitmodules_files, 'submodules') \
+        + create_configs(repo.mix_exs_files, 'elixir') \
+        + create_configs(repo.go_mod_files, 'go') \
+        + create_configs(repo.tf_files, 'terraform') \
+        + create_configs(repo.elm_json_files, 'elm')
+
+        # Abort if there are no configs
+        if len(configs) == 0:
+            print(f"Skipping {repo.full_name} because there are no configs")
+            continue
 
         content = render_dependabot_config(configs)
         if dry_run:
