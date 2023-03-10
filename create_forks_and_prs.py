@@ -4,7 +4,6 @@ import pystache
 def extract_path(full_path):
     return "/"+"/".join(full_path.split("/")[2:-1])
 
-
 def render_dependabot_config(configs):
     return pystache.render(
         """
@@ -24,6 +23,19 @@ updates:
         """,
         {'configs': configs},
     )
+
+def render_pr_message():
+    return pystache.render(
+        """
+This PR adds a Dependabot configuration to this repository.
+Dependabot will automatically create PRs to update your dependencies.
+It's a good way to keep your dependencies up to date and to make sure that you are always using the latest version of your dependencies.
+
+Some more thoughts:
+This configuration will ignore major version upgrades. This is because major version upgrades often require manual work to make sure that the upgrade works as expected.
+This PR was created by the [Project Maintenance Bot](github.com/project-maintenance-bot), a bot that helps with the maintenance of open-source projects.
+        """,
+        {})
 
 def create_forks_and_prs(github_client, repos, dry_run):
     for repo in repos.values():
