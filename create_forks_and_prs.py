@@ -13,8 +13,13 @@ updates:
 {{#configs}}
   - package-ecosystem: "{{ecosystem}}"
     directory: "{{directory}}"
+    open-pull-requests-limit: 10
     schedule:
         interval: "weekly"
+    # Ignore major version upgrades
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 {{/configs}}
         """,
         {'configs': configs},
@@ -65,17 +70,8 @@ def create_forks_and_prs(github_client, repos, dry_run):
         + [{'ecosystem': 'cargo', 'directory': extract_path(path)} for path in repo.cargo_toml_files] \
         + [{'ecosystem': 'composer', 'directory': extract_path(path)} for path in repo.composer_json_files] \
         + [{'ecosystem': 'nuget', 'directory': extract_path(path)} for path in repo.csproj_files] \
-        + [{'ecosystem': 'docker', 'directory': extract_path(path)} for path in repo.dockerfile_files] \
-        + [{'ecosystem': 'submodules', 'directory': extract_path(path)} for path in repo.gitmodules_files] \
-        + [{'ecosystem': 'elixir', 'directory': extract_path(path)} for path in repo.mix_exs_files] \
-        + [{'ecosystem': 'go', 'directory': extract_path(path)} for path in repo.go_mod_files] \
-        + [{'ecosystem': 'terraform', 'directory': extract_path(path)} for path in repo.tf_files] \
-        + [{'ecosystem': 'elm', 'directory': extract_path(path)} for path in repo.elm_json_files]
-
-        content = render_dependabot_config(configs)
-        if dry_run:
-            print("CONTENT:")
-            print(content)
+        + [{'ecosystem': 'docker', 'directory': extract_path(path
+    open-pull-requests-limit: 10
             print("END CONTENT")
         
         if not dry_run:
