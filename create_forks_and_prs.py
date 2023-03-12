@@ -23,7 +23,7 @@ updates:
 {{/configs}}
         """,
         {'configs': configs},
-    )
+    ).strip()+"\n"
 
 def render_pr_message():
     return pystache.render(
