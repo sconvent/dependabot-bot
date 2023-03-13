@@ -3,6 +3,8 @@ import os
 import pathlib
 import shutil
 import pickle
+import re
+
 
 def read_advanced_repo_info(github_client: Github, repos):
     # potentially delete folder
@@ -43,34 +45,45 @@ def read_advanced_repo_info(github_client: Github, repos):
 
             repo.languages = repo_info.get_languages()
 
+            # Todo: for all ecosystems, check if the respective file actually contains dependencies
+
             # package.json (npm, yarn)
             # TODO: Match more languages
             repo.package_json_files = find_files(repo, ["JavaScript", "TypeScript"], "package.json")
-            
+            repo.package_json_files = filter_files(repo.package_json_files, r".*dependencies.*")
+
             # pom.xml (maven)
             repo.pom_xml_files = find_files(repo, ["Java", "Kotlin", "Scala"], "pom.xml")
+            repo.pom_xml_files = filter_files(repo.pom_xml_files, r".*dependencies.*")
 
             # build.gradle (gradle)
             repo.build_gradle_files = find_files(repo, ["Java", "Kotlin", "Scala"], "build.gradle")
+            repo.build_gradle_files = filter_files(repo.build_gradle_files, r".*dependencies.*")
 
             # requirements.txt (pip)
             repo.requirements_txt_files = find_files(repo, ["Python"], "requirements.txt")
+            # requirements.txt only contains dependencies so no need to filter
 
             # Gemfile (bundler)
             repo.gemfile_files = find_files(repo, ["Ruby"], "Gemfile")
+            # No easy way to filter Gemfiles
 
             # Cargo.toml (cargo)
             repo.cargo_toml_files = find_files(repo, ["Rust"], "Cargo.toml")
+            repo.cargo_toml_files = filter_files(repo.cargo_toml_files, r".*dependencies.*")
 
             # composer.json (composer)
             repo.composer_json_files = find_files(repo, ["PHP"], "composer.json")
-
+            repo.composer_json_files = filter_files(repo.composer_json_files, r".*require.*")
+            
             # Dockerfile (docker)
             repo.dockerfile_files = find_files(repo, ["Dockerfile"], "Dockerfile")
 
             # mix.exs (mix)
             repo.mix_exs_files = find_files(repo, ["Elixir"], "mix.exs")
+            repo.mix_exs_files = filter_files(repo.mix_exs_files, r".*def deps do.*")            
 
+            # Todo: Filter further files for dependencies
             # elm.json (elm)
             repo.elm_json_files = find_files(repo, ["Elm"], "elm.json")
 
@@ -131,3 +144,15 @@ def find_files(repo, languages, filename):
         return results
     else:
         return []
+
+# Filter files that match a certain regex
+def filter_files(files, regex):
+    result = []
+    for file in files:
+        s = ""
+        # get file content
+        with open(file) as f: s = f.read()
+        # check if file content matches regex
+        if re.search(regex, s): result.append(file)
+        else: print(f"File {file} does not match regex {regex}")
+    return result
