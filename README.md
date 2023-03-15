@@ -1,3 +1,5 @@
+![CI](https://github.com/sconvent/dependabot-bot/actions/workflows/ci.yml/badge.svg?branch=main)
+
 # Project Maintenance Bot
 **Work in Progress**
 
