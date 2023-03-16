@@ -88,12 +88,12 @@ def read_advanced_repo_info(github_client: Github, repos):
             repo.elm_json_files = find_files(repo, ["Elm"], "elm.json")
 
             # .gitmodules (git submodules)
-            # TODO: Match all languages
-            repo.gitmodules_files = find_files(repo, [""], ".gitmodules")
+            # matches all languages
+            repo.gitmodules_files = find_files(repo, ["*"], ".gitmodules")
 
             # .github/workflows/*.yaml (github actions)
-            # TODO: Match all languages
-            repo.github_workflows_files = find_files(repo, [""], ".github/workflows")
+            # matches all languages
+            repo.github_workflows_files = find_files(repo, ["*"], ".github/workflows")
 
             # go.mod (gomod)
             repo.go_mod_files = find_files(repo, ["Go"], "go.mod")
@@ -112,14 +112,14 @@ def read_advanced_repo_info(github_client: Github, repos):
             repo.tf_files = find_files(repo, ["Terraform"], "*.tf")
 
             # Get info whether repo already has Dependabot config
-            repo.dependabot_config_files = find_files(repo, [""], ".github/dependabot.yml")
+            repo.dependabot_config_files = find_files(repo, ["*"], ".github/dependabot.yml")
             repo.has_dependabot_config = len(repo.dependabot_config_files) > 0
 
             # TODO: Get info whether Dependabot has opened PRs
             #repo_info.get_pulls
 
             # Get info whether repo has Renovate config
-            repo.renovate_config_files = find_files(repo, [""], "./renovate.json")
+            repo.renovate_config_files = find_files(repo, ["*"], "./renovate.json")
             repo.has_renovate_config = len(repo.renovate_config_files) > 0
 
             # Get info on activity of repo
@@ -135,7 +135,7 @@ def read_advanced_repo_info(github_client: Github, repos):
 def find_files(repo, languages, filename):
     # Check if repo uses any of the given languages
     languages_intersection = [language for language in languages if language in repo.languages]
-    if len(languages_intersection) > 0: 
+    if len(languages_intersection) > 0 or languages == ["*"]: 
         # use pathlib to search directory for filename
         folder_path = f"repos/{repo.full_name.replace('/', '_')}"
         results = pathlib.Path(folder_path).glob(f"**/{filename}")
