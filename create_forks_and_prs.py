@@ -48,71 +48,74 @@ def create_configs(files, ecosystem):
 
 def create_forks_and_prs(github_client, repos, dry_run):
     for repo in repos.values():
-        if not repo.has_advanced_info:
-            print(f"Skipping {repo.full_name} because it has no advanced info")
-            continue
+        try:
+            if not repo.has_advanced_info:
+                print(f"Skipping {repo.full_name} because it has no advanced info")
+                continue
 
-        if repo.has_dependabot_config or repo.has_renovate_config:
-            print(f"Skipping {repo.full_name} because it already has dependabot or renovate config")
-            continue
+            if repo.has_dependabot_config or repo.has_renovate_config:
+                print(f"Skipping {repo.full_name} because it already has dependabot or renovate config")
+                continue
 
-        if not dry_run:
-            # Check if fork already exists
-            try:
-                potentially_existing_fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
-                print("Fork already exists")
-            except:
-                # If not, create fork
-                print(f"Creating fork for {repo.full_name}")
-                github_repo = github_client.get_repo(repo.full_name)
-                github_repo.create_fork()
-                time.sleep(30)
+            if not dry_run:
+                # Check if fork already exists
+                try:
+                    potentially_existing_fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+                    print("Fork already exists")
+                except:
+                    # If not, create fork
+                    print(f"Creating fork for {repo.full_name}")
+                    github_repo = github_client.get_repo(repo.full_name)
+                    github_repo.create_fork()
+                    time.sleep(30)
 
-            # Get fork
-            fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
-            # Get default branch
-            print(fork.default_branch)
-            sha = fork.get_branch(fork.default_branch).commit.sha
+                # Get fork
+                fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+                # Get default branch
+                print(fork.default_branch)
+                sha = fork.get_branch(fork.default_branch).commit.sha
 
-            # Todo: Check if branch already exists
-            # Create branch
-            print(f"Creating branch for {repo.full_name}")
-            fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
+                # Todo: Check if branch already exists
+                # Create branch
+                print(f"Creating branch for {repo.full_name}")
+                fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
 
-        # Create dependabot.yml
-        configs = \
-        create_configs(repo.package_json_files, 'npm') \
-        + create_configs(repo.pom_xml_files, 'maven') \
-        + create_configs(repo.build_gradle_files, 'gradle') \
-        + create_configs(repo.requirements_txt_files, 'pip') \
-        + create_configs(repo.gemfile_files, 'bundler') \
-        + create_configs(repo.cargo_toml_files, 'cargo') \
-        + create_configs(repo.composer_json_files, 'composer') \
-        + create_configs(repo.csproj_files, 'nuget') \
-        + create_configs(repo.dockerfile_files, 'docker') \
-        + create_configs(repo.gitmodules_files, 'submodules') \
-        + create_configs(repo.mix_exs_files, 'elixir') \
-        + create_configs(repo.go_mod_files, 'go') \
-        + create_configs(repo.tf_files, 'terraform') \
-        + create_configs(repo.elm_json_files, 'elm')
+            # Create dependabot.yml
+            configs = \
+            create_configs(repo.package_json_files, 'npm') \
+            + create_configs(repo.pom_xml_files, 'maven') \
+            + create_configs(repo.build_gradle_files, 'gradle') \
+            + create_configs(repo.requirements_txt_files, 'pip') \
+            + create_configs(repo.gemfile_files, 'bundler') \
+            + create_configs(repo.cargo_toml_files, 'cargo') \
+            + create_configs(repo.composer_json_files, 'composer') \
+            + create_configs(repo.csproj_files, 'nuget') \
+            + create_configs(repo.dockerfile_files, 'docker') \
+            + create_configs(repo.gitmodules_files, 'submodules') \
+            + create_configs(repo.mix_exs_files, 'elixir') \
+            + create_configs(repo.go_mod_files, 'go') \
+            + create_configs(repo.tf_files, 'terraform') \
+            + create_configs(repo.elm_json_files, 'elm')
 
-        # Abort if there are no configs
-        if len(configs) == 0:
-            print(f"Skipping {repo.full_name} because there are no configs")
-            continue
+            # Abort if there are no configs
+            if len(configs) == 0:
+                print(f"Skipping {repo.full_name} because there are no configs")
+                continue
 
-        content = render_dependabot_config(configs)
-        if dry_run:
-            print("CONTENT:")
-            print(content)
-            print("END CONTENT")
-        
-        if not dry_run:
-            # Todo: Check if file already exists
-            fork.create_file(path="dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
+            content = render_dependabot_config(configs)
+            if dry_run:
+                print("CONTENT:")
+                print(content)
+                print("END CONTENT")
+            
+            if not dry_run:
+                # Todo: Check if file already exists
+                fork.create_file(path="dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
 
-            # Create pull request if not exists
-            # Not yet implemented
+                # Create pull request if not exists
+                # Not yet implemented
 
-            # Wait 60 seconds
-            time.sleep(60)
+                # Wait 60 seconds
+                time.sleep(60)
+        except Exception as e:
+            print(f"Error while processing {repo.full_name}: {e}")

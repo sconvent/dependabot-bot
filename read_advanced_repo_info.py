@@ -18,119 +18,122 @@ def read_advanced_repo_info(github_client: Github, repos):
 
     count = 0
     for repo in repos.values():
-        if not repo.has_advanced_info:
-            # save local_db every 50 repos
-            count += 1
-            if count % 50 == 0:
-                # save local_db
-                with(open('local_db', 'wb')) as f:
-                    pickle.dump(repos, f)
+        try:
+            if not repo.has_advanced_info:
+                # save local_db every 50 repos
+                count += 1
+                if count % 50 == 0:
+                    # save local_db
+                    with(open('local_db', 'wb')) as f:
+                        pickle.dump(repos, f)
 
 
-            # Check if folder exists
-            folder_path = f"repos/{repo.full_name.replace('/', '_')}"
-            if os.path.isdir(folder_path):
-                print(f"Repo {repo.full_name} already cloned. Will pull instead.")
-                command = f"cd {folder_path} && git pull"
-                os.system(command)
-            else:
-                print(f"Cloning repo {repo.full_name}")
-
+                # Check if folder exists
                 folder_path = f"repos/{repo.full_name.replace('/', '_')}"
-                command = f"git clone --depth 1 https://github.com/{repo.full_name}.git {folder_path}"
-                os.system(command)
+                if os.path.isdir(folder_path):
+                    print(f"Repo {repo.full_name} already cloned. Will pull instead.")
+                    command = f"cd {folder_path} && git pull"
+                    os.system(command)
+                else:
+                    print(f"Cloning repo {repo.full_name}")
 
-            print(f"Reading advanced info for repo {repo.full_name}")
-            repo_info = github_client.get_repo(repo.full_name)
+                    folder_path = f"repos/{repo.full_name.replace('/', '_')}"
+                    command = f"git clone --depth 1 https://github.com/{repo.full_name}.git {folder_path}"
+                    os.system(command)
 
-            repo.languages = repo_info.get_languages()
+                print(f"Reading advanced info for repo {repo.full_name}")
+                repo_info = github_client.get_repo(repo.full_name)
 
-            # Todo: for all ecosystems, check if the respective file actually contains dependencies
+                repo.languages = repo_info.get_languages()
 
-            # package.json (npm, yarn)
-            # TODO: Match more languages
-            repo.package_json_files = find_files(repo, ["JavaScript", "TypeScript"], "package.json")
-            repo.package_json_files = filter_files(repo.package_json_files, r".*dependencies.*")
+                # Todo: for all ecosystems, check if the respective file actually contains dependencies
 
-            # pom.xml (maven)
-            repo.pom_xml_files = find_files(repo, ["Java", "Kotlin", "Scala"], "pom.xml")
-            repo.pom_xml_files = filter_files(repo.pom_xml_files, r".*dependencies.*")
+                # package.json (npm, yarn)
+                # TODO: Match more languages
+                repo.package_json_files = find_files(repo, ["JavaScript", "TypeScript"], "package.json")
+                repo.package_json_files = filter_files(repo.package_json_files, r".*dependencies.*")
 
-            # build.gradle (gradle)
-            repo.build_gradle_files = find_files(repo, ["Java", "Kotlin", "Scala"], "build.gradle")
-            repo.build_gradle_files = filter_files(repo.build_gradle_files, r".*dependencies.*")
+                # pom.xml (maven)
+                repo.pom_xml_files = find_files(repo, ["Java", "Kotlin", "Scala"], "pom.xml")
+                repo.pom_xml_files = filter_files(repo.pom_xml_files, r".*dependencies.*")
 
-            # requirements.txt (pip)
-            repo.requirements_txt_files = find_files(repo, ["Python"], "requirements.txt")
-            # requirements.txt only contains dependencies so no need to filter
+                # build.gradle (gradle)
+                repo.build_gradle_files = find_files(repo, ["Java", "Kotlin", "Scala"], "build.gradle")
+                repo.build_gradle_files = filter_files(repo.build_gradle_files, r".*dependencies.*")
 
-            # Gemfile (bundler)
-            repo.gemfile_files = find_files(repo, ["Ruby"], "Gemfile")
-            # No easy way to filter Gemfiles
+                # requirements.txt (pip)
+                repo.requirements_txt_files = find_files(repo, ["Python"], "requirements.txt")
+                # requirements.txt only contains dependencies so no need to filter
 
-            # Cargo.toml (cargo)
-            repo.cargo_toml_files = find_files(repo, ["Rust"], "Cargo.toml")
-            repo.cargo_toml_files = filter_files(repo.cargo_toml_files, r".*dependencies.*")
+                # Gemfile (bundler)
+                repo.gemfile_files = find_files(repo, ["Ruby"], "Gemfile")
+                # No easy way to filter Gemfiles
 
-            # composer.json (composer)
-            repo.composer_json_files = find_files(repo, ["PHP"], "composer.json")
-            repo.composer_json_files = filter_files(repo.composer_json_files, r".*require.*")
-            
-            # Dockerfile (docker)
-            repo.dockerfile_files = find_files(repo, ["Dockerfile"], "Dockerfile")
+                # Cargo.toml (cargo)
+                repo.cargo_toml_files = find_files(repo, ["Rust"], "Cargo.toml")
+                repo.cargo_toml_files = filter_files(repo.cargo_toml_files, r".*dependencies.*")
 
-            # mix.exs (mix)
-            repo.mix_exs_files = find_files(repo, ["Elixir"], "mix.exs")
-            repo.mix_exs_files = filter_files(repo.mix_exs_files, r".*def deps do.*")            
+                # composer.json (composer)
+                repo.composer_json_files = find_files(repo, ["PHP"], "composer.json")
+                repo.composer_json_files = filter_files(repo.composer_json_files, r".*require.*")
+                
+                # Dockerfile (docker)
+                repo.dockerfile_files = find_files(repo, ["Dockerfile"], "Dockerfile")
 
-            # Todo: Filter further files for dependencies
-            # elm.json (elm)
-            repo.elm_json_files = find_files(repo, ["Elm"], "elm.json")
+                # mix.exs (mix)
+                repo.mix_exs_files = find_files(repo, ["Elixir"], "mix.exs")
+                repo.mix_exs_files = filter_files(repo.mix_exs_files, r".*def deps do.*")            
 
-            # .gitmodules (git submodules)
-            # matches all languages
-            repo.gitmodules_files = find_files(repo, ["*"], ".gitmodules")
+                # Todo: Filter further files for dependencies
+                # elm.json (elm)
+                repo.elm_json_files = find_files(repo, ["Elm"], "elm.json")
 
-            # .github/workflows/*.yaml (github actions)
-            # matches all languages
-            repo.github_workflows_files = find_files(repo, ["*"], ".github/workflows")
+                # .gitmodules (git submodules)
+                # matches all languages
+                repo.gitmodules_files = find_files(repo, ["*"], ".gitmodules")
 
-            # go.mod (gomod)
-            repo.go_mod_files = find_files(repo, ["Go"], "go.mod")
+                # .github/workflows/*.yaml (github actions)
+                # matches all languages
+                repo.github_workflows_files = find_files(repo, ["*"], ".github/workflows")
 
-            # *.csproj (nuget)
-            # TODO: Potentially match more languages
-            # TODO: Check whether this is the correct filename
-            # TODO: Match with regex
-            repo.csproj_files = find_files(repo, ["C#"], "*.csproj")
+                # go.mod (gomod)
+                repo.go_mod_files = find_files(repo, ["Go"], "go.mod")
 
-            # pubspec.yaml (pub)
-            repo.pubspec_yaml_files = find_files(repo, ["Dart"], "pubspec.yaml")
+                # *.csproj (nuget)
+                # TODO: Potentially match more languages
+                # TODO: Check whether this is the correct filename
+                # TODO: Match with regex
+                repo.csproj_files = find_files(repo, ["C#"], "*.csproj")
 
-            # *.tf (terraform)
-            # TODO: Match with regex
-            repo.tf_files = find_files(repo, ["Terraform"], "*.tf")
+                # pubspec.yaml (pub)
+                repo.pubspec_yaml_files = find_files(repo, ["Dart"], "pubspec.yaml")
 
-            # Get info whether repo already has Dependabot config
-            repo.dependabot_config_files = find_files(repo, ["*"], ".github/dependabot.yml")
-            repo.has_dependabot_config = len(repo.dependabot_config_files) > 0
+                # *.tf (terraform)
+                # TODO: Match with regex
+                repo.tf_files = find_files(repo, ["Terraform"], "*.tf")
 
-            # TODO: Get info whether Dependabot has opened PRs
-            #repo_info.get_pulls
+                # Get info whether repo already has Dependabot config
+                repo.dependabot_config_files = find_files(repo, ["*"], ".github/dependabot.yml")
+                repo.has_dependabot_config = len(repo.dependabot_config_files) > 0
 
-            # Get info whether repo has Renovate config
-            repo.renovate_config_files = find_files(repo, ["*"], "./renovate.json")
-            repo.has_renovate_config = len(repo.renovate_config_files) > 0
+                # TODO: Get info whether Dependabot has opened PRs
+                #repo_info.get_pulls
 
-            # Get info on activity of repo
-            repo.activity = repo_info.get_stats_participation().all
-            
-            repo.has_advanced_info = True
+                # Get info whether repo has Renovate config
+                repo.renovate_config_files = find_files(repo, ["*"], "./renovate.json")
+                repo.has_renovate_config = len(repo.renovate_config_files) > 0
 
-            # Delete folder
-            shutil.rmtree(folder_path)
-        else:
-            print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")        
+                # Get info on activity of repo
+                repo.activity = repo_info.get_stats_participation().all
+                
+                repo.has_advanced_info = True
+
+                # Delete folder
+                shutil.rmtree(folder_path)
+            else:
+                print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")  
+        except Exception as e:
+            print(f"Error while reading advanced info for repo {repo.full_name}: {e}")      
 
 def find_files(repo, languages, filename):
     # Check if repo uses any of the given languages
