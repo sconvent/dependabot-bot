@@ -31,12 +31,13 @@ else:
 
 arguments = sys.argv
 command = arguments[1]
+print(f"Command: {command}")
 if command == "read_basic_repo_info":
     max_count = int(arguments[2])
     read_basic_repo_info(github_client, repos, max_count)
 elif command == "read_advanced_repo_info":
     read_advanced_repo_info(github_client, repos)
-elif command ==  "create_forks_and_prs":
+elif command == "create_forks_and_prs":
     create_forks_and_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
 elif command ==  "create_real_prs":
     create_real_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)

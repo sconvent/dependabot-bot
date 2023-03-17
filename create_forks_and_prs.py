@@ -67,6 +67,7 @@ def create_forks_and_prs(github_client, repos, dry_run):
                     print(f"Creating fork for {repo.full_name}")
                     github_repo = github_client.get_repo(repo.full_name)
                     github_repo.create_fork()
+                    print("Waiting 30 seconds for fork to be created")
                     time.sleep(30)
 
                 # Get fork
@@ -75,7 +76,7 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 print(fork.default_branch)
                 sha = fork.get_branch(fork.default_branch).commit.sha
 
-                # Todo: Check if branch already exists
+                # Todo: Remove branch if it already exists
                 # Create branch
                 print(f"Creating branch for {repo.full_name}")
                 fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
@@ -110,12 +111,14 @@ def create_forks_and_prs(github_client, repos, dry_run):
             
             if not dry_run:
                 # Todo: Check if file already exists
+                print(f"Creating dependabot.yml for {repo.full_name} on branch add-dependabot")
                 fork.create_file(path="dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
 
                 # Create pull request if not exists
                 # Not yet implemented
 
                 # Wait 60 seconds
+                print("Waiting 60 seconds")
                 time.sleep(60)
         except Exception as e:
             print(f"Error while processing {repo.full_name}: {e}")
