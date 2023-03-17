@@ -37,9 +37,9 @@ if command == "read_basic_repo_info":
 elif command == "read_advanced_repo_info":
     read_advanced_repo_info(github_client, repos)
 elif command ==  "create_forks_and_prs":
-    create_forks_and_prs(github_client, repos, dry_run=bool(arguments[2]))
+    create_forks_and_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
 elif command ==  "create_real_prs":
-    create_real_prs(github_client, repos)
+    create_real_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
 elif command  == "dump_db":
     dump_db(github_client, repos)
 else:
