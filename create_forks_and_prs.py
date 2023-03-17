@@ -112,7 +112,7 @@ def create_forks_and_prs(github_client, repos, dry_run):
             if not dry_run:
                 # Todo: Check if file already exists
                 print(f"Creating dependabot.yml for {repo.full_name} on branch add-dependabot")
-                fork.create_file(path="dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
+                fork.create_file(path=".github/dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
 
                 # Create pull request if not exists
                 # Not yet implemented
