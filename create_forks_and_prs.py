@@ -74,6 +74,11 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
                 # Get default branch
                 print(fork.default_branch)
+                try:
+                    branch = fork.get_branch("add-dependabot")
+                    branch.delete()
+                except:
+                    pass
                 sha = fork.get_branch(fork.default_branch).commit.sha
 
                 # Todo: Remove branch if it already exists
