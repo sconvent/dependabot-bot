@@ -8,6 +8,9 @@ Currently the only offered functionality is to create PRs which add a Dependabot
 
 For the future it is planned to add the functionality to create basic CI pipelines and to scan and fix problems found by static code analysis.
 
+## Install Dependencies
+Install required dependencies with `pip install -r requirements.txt`
+
 ## Usage
 
 ### Token
