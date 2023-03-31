@@ -75,9 +75,12 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 # Get default branch
                 print(fork.default_branch)
                 try:
-                    branch = fork.get_branch("add-dependabot")
+                    branch = fork.get_git_ref("heads/add-dependabot")
+                    print("Deleting already existing branch")
                     branch.delete()
+                    print("Deleted already existing branch")
                 except:
+                    print("Branch does not exist yet")
                     pass
                 sha = fork.get_branch(fork.default_branch).commit.sha
 
