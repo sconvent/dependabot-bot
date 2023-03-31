@@ -57,6 +57,31 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 print(f"Skipping {repo.full_name} because it already has dependabot or renovate config")
                 continue
 
+            # Gather configs
+            configs = \
+            create_configs(repo.package_json_files, 'npm') \
+            + create_configs(repo.pom_xml_files, 'maven') \
+            + create_configs(repo.build_gradle_files, 'gradle') \
+            + create_configs(repo.requirements_txt_files, 'pip') \
+            + create_configs(repo.gemfile_files, 'bundler') \
+            + create_configs(repo.cargo_toml_files, 'cargo') \
+            + create_configs(repo.composer_json_files, 'composer') \
+            + create_configs(repo.csproj_files, 'nuget') \
+            + create_configs(repo.dockerfile_files, 'docker') \
+            + create_configs(repo.gitmodules_files, 'submodules') \
+            + create_configs(repo.mix_exs_files, 'elixir') \
+            + create_configs(repo.go_mod_files, 'go') \
+            + create_configs(repo.tf_files, 'terraform') \
+            + create_configs(repo.elm_json_files, 'elm')
+
+            # Sort by length of directory
+            configs.sort(key=lambda x: len(x['directory']))
+
+            # Abort if there are no configs
+            if len(configs) == 0:
+                print(f"Skipping {repo.full_name} because there are no configs")
+                continue
+
             if not dry_run:
                 # Check if fork already exists
                 try:
@@ -91,30 +116,6 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 time.sleep(5)
 
             # Create dependabot.yml
-            configs = \
-            create_configs(repo.package_json_files, 'npm') \
-            + create_configs(repo.pom_xml_files, 'maven') \
-            + create_configs(repo.build_gradle_files, 'gradle') \
-            + create_configs(repo.requirements_txt_files, 'pip') \
-            + create_configs(repo.gemfile_files, 'bundler') \
-            + create_configs(repo.cargo_toml_files, 'cargo') \
-            + create_configs(repo.composer_json_files, 'composer') \
-            + create_configs(repo.csproj_files, 'nuget') \
-            + create_configs(repo.dockerfile_files, 'docker') \
-            + create_configs(repo.gitmodules_files, 'submodules') \
-            + create_configs(repo.mix_exs_files, 'elixir') \
-            + create_configs(repo.go_mod_files, 'go') \
-            + create_configs(repo.tf_files, 'terraform') \
-            + create_configs(repo.elm_json_files, 'elm')
-
-            # Sort by length of directory
-            configs.sort(key=lambda x: len(x['directory']))
-
-            # Abort if there are no configs
-            if len(configs) == 0:
-                print(f"Skipping {repo.full_name} because there are no configs")
-                continue
-
             content = render_dependabot_config(configs)
             if dry_run:
                 print("CONTENT:")
