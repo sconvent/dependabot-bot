@@ -82,11 +82,13 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 except:
                     print("Branch does not exist yet")
                     pass
+                time.sleep(5)
                 sha = fork.get_branch(fork.default_branch).commit.sha
 
                 # Create branch
                 print(f"Creating branch for {repo.full_name}")
                 fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
+                time.sleep(5)
 
             # Create dependabot.yml
             configs = \
@@ -122,16 +124,18 @@ def create_forks_and_prs(github_client, repos, dry_run):
             if not dry_run:
                 print(f"Creating dependabot.yml for {repo.full_name} on branch add-dependabot")
                 fork.create_file(path=".github/dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
+                time.sleep(3)
 
                 # Create pull request if not exists
                 if len(list(fork.get_pulls(state='open', head='project-maintenance-bot:add-dependabot'))) == 0:
                     print(f"Creating pull request for {repo.full_name}")
                     fork.create_pull(title="Add dependabot.yml", body=render_pr_message(), head="add-dependabot", base=fork.default_branch)
+                    time.sleep(5)
                 else:
                     print(f"Pull request already exists for {repo.full_name}")
                 
-                # Wait 60 seconds
-                print("Waiting 60 seconds")
-                time.sleep(60)
+                # Wait 50 seconds
+                print("Waiting 50 seconds")
+                time.sleep(50)
         except Exception as e:
             print(f"Error while processing {repo.full_name}: {e}")
