@@ -40,6 +40,6 @@ def create_pr(github_client, repo, fork, comment, dry_run):
         github_repo.create_pull(
             title="Add Dependabot config",
             body=comment.body,
-            head=f"project-maintenance-bot:{repo.default_branch}",
+            head=f"project-maintenance-bot:add-dependabot",
             base=repo.default_branch,
     )
