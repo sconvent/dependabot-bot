@@ -3,15 +3,15 @@ import pickle
 import time
 
 def read_basic_repo_info(github_client, repos, max_count):
-    last_num_stars = 1000000
+    last_num_stars = 1000
     finished = False
     count = 0
     while not finished and len(repos.keys()) < max_count:
         finished = True
 
-        query = f"stars:1000..{last_num_stars+1}"
+        query = f"stars:{last_num_stars}..1000000"
         sort = "stars"
-        result = github_client.search_repositories(query=query, sort=sort, order='desc')
+        result = github_client.search_repositories(query=query, sort=sort, order='asc')
 
         for repo in result:
             if len(repos.keys()) >= max_count:
