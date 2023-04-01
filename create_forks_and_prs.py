@@ -57,6 +57,11 @@ def create_forks_and_prs(github_client, repos, dry_run):
                 print(f"Skipping {repo.full_name} because it already has dependabot or renovate config")
                 continue
 
+            # Skip if project had less than 20 commits in the last year
+            if sum(repo.activity) < 20:
+                print(f"Skipping {repo.full_name} because it had less than 20 commits in the last year")
+                continue
+
             # Gather configs
             configs = \
             create_configs(repo.package_json_files, 'npm') \
