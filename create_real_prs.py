@@ -1,3 +1,5 @@
+import time
+
 def create_real_prs(github_client, repos, dry_run):
     for repo in repos.values():
         try:
@@ -29,6 +31,8 @@ def create_real_prs(github_client, repos, dry_run):
                             print(f"Creating real PR for {repo.full_name}")
                             create_pr(github_client, repo, fork, comment, dry_run)
                             break
+            # wait 60 seconds
+            time.sleep(60)
         except Exception as e:
             print(f"Error while processing {repo.full_name}: {e}")
 
