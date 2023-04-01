@@ -1,5 +1,6 @@
 from repo import Repo
 import pickle
+import time
 
 def read_basic_repo_info(github_client, repos, max_count):
     last_num_stars = 1000000
@@ -23,6 +24,7 @@ def read_basic_repo_info(github_client, repos, max_count):
             last_num_stars = repo.stargazers_count
             count += 1
             finished = False
+            time.sleep(1)
         
         # save local_db
         with(open('local_db', 'wb')) as f:
