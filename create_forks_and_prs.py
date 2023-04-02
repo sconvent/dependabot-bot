@@ -78,6 +78,7 @@ def create_forks_and_prs(github_client, repos, dry_run):
             + create_configs(repo.go_mod_files, 'go') \
             + create_configs(repo.tf_files, 'terraform') \
             + create_configs(repo.elm_json_files, 'elm')
+            + create_configs([path.replace(".github/workflows", "") for path in repo.github_workflow_files], 'github-actions')
 
             # Sort by length of directory
             configs.sort(key=lambda x: len(x['directory']))
