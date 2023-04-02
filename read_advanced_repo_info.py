@@ -51,7 +51,7 @@ def read_advanced_repo_info(github_client: Github, repos):
                 # package.json (npm, yarn)
                 # TODO: Match more languages
                 repo.package_json_files = find_files(repo, ["JavaScript", "TypeScript"], "package.json")
-                repo.package_json_files = filter_files(repo.package_json_files, r".*dependencies.*")
+                repo.package_json_files = filter_files(repo.package_json_files, r".*[dD]ependencies.*")
 
                 # pom.xml (maven)
                 repo.pom_xml_files = find_files(repo, ["Java", "Kotlin", "Scala"], "pom.xml")
