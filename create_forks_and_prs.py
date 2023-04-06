@@ -15,10 +15,12 @@ updates:
     open-pull-requests-limit: 10
     schedule:
         interval: "weekly"
+    {{#ignore_major}}
     # Ignore major version upgrades
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    {{/ignore_major}}
 
 {{/configs}}
         """,
@@ -39,7 +41,7 @@ This PR was created by the [Project Maintenance Bot](github.com/project-maintena
         {})
 
 def create_configs(files, ecosystem):
-    configs = [{'ecosystem': ecosystem, 'directory': extract_path(path)} for path in files]
+    configs = [{'ecosystem': ecosystem, 'directory': extract_path(path), 'ignore_major': (ecosystem != "github-actions")} for path in files]
     # sort by least nested directory and then by length
     configs.sort(key=lambda x: (x['directory'].count('/'), len(x['directory'])))
     # maximum number of configs is 3
