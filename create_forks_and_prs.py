@@ -34,7 +34,7 @@ This PR adds a [Dependabot](https://docs.github.com/en/code-security/dependabot/
 Dependabot will automatically create PRs to upgrade dependencies.
 It's a good way to keep your dependencies up to date and to make sure that you are always using the latest version of your dependencies.
 
-This configuration will ignore major version upgrades. This is because major version upgrades often require manual work to make sure that the upgrade works as expected.
+This configuration will ignore major version upgrades for certain ecosystems. This is because major version upgrades often require manual work to make sure that the upgrade works as expected.
 
 This PR was created by the [Project Maintenance Bot](github.com/project-maintenance-bot), a bot that helps with the maintenance of open-source projects.
         """,
