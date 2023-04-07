@@ -20,6 +20,11 @@ try:
 except:
     repos = dict()
 
+# clean up local_db
+for repo in repos.values():
+    if not hasattr(repo, "created_real_pr"):
+        repo.created_real_pr = False
+
 # read env var for github token
 token = os.getenv('GITHUB_TOKEN')
 
