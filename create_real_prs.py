@@ -66,4 +66,7 @@ def create_pr(github_client, repo, fork, comment, dry_run):
             head=f"project-maintenance-bot:add-dependabot",
             base=repo.default_branch,
         )
+        print(f"Created real PR for {repo.full_name}")
         repo.created_real_pr = True
+    else:
+        print(f"Would have created real PR for {repo.full_name}")
