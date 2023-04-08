@@ -32,11 +32,12 @@ def render_pr_message():
         """
 This PR adds a [Dependabot](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/managing-pull-requests-for-dependency-updates) configuration to this repository.
 Dependabot will automatically create PRs to upgrade dependencies.
-It's a good way to keep your dependencies up to date and to make sure that you are always using the latest version of your dependencies.
+It's a good way to keep your dependencies up to date to avoid security issues and to make sure to use the latest bug fixes.
 
-This configuration will ignore major version upgrades for certain ecosystems. This is because major version upgrades often require manual work to make sure that the upgrade works as expected.
+This configuration will ignore major version upgrades for certain ecosystems because they often require manual work to make sure that the upgrade works as expected.
 
 This PR was created by the [Project Maintenance Bot](github.com/project-maintenance-bot), a bot that helps with the maintenance of open-source projects.
+It has been reviewed by a human before it was opened.
         """,
         {})
 
