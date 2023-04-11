@@ -2,7 +2,7 @@ from repo import Repo
 import pickle
 import time
 
-def read_basic_repo_info(github_client, repos, max_count):
+def read_basic_repo_info(github_client, config, repos, max_count):
     last_num_stars = 1000
     finished = False
     count = 0

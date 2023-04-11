@@ -6,7 +6,7 @@ import pickle
 import re
 
 
-def read_advanced_repo_info(github_client: Github, repos):
+def read_advanced_repo_info(github_client: Github, config, repos):
     # potentially delete folder
     try:
         shutil.rmtree("repos")

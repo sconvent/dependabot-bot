@@ -8,9 +8,18 @@ from create_real_prs import create_real_prs
 from dump_db import dump_db
 import sys
 import warnings
+import json
 
 # ignore warnings
 warnings.filterwarnings('ignore')
+
+# load config.json
+config = None
+try:
+    with open('config.json') as f:
+        config = json.load(f)
+except:
+    print("Could not load config.json")
 
 # load local_db
 repos = dict()
@@ -39,15 +48,15 @@ command = arguments[1]
 print(f"Command: {command}")
 if command == "read_basic_repo_info":
     max_count = int(arguments[2])
-    read_basic_repo_info(github_client, repos, max_count)
+    read_basic_repo_info(github_client, config, repos, max_count)
 elif command == "read_advanced_repo_info":
-    read_advanced_repo_info(github_client, repos)
+    read_advanced_repo_info(github_client, config, repos)
 elif command == "create_forks_and_prs":
-    create_forks_and_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
+    create_forks_and_prs(github_client, config, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
 elif command ==  "create_real_prs":
-    create_real_prs(github_client, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
+    create_real_prs(github_client, config, repos, dry_run=arguments[2] == "true" if len(arguments) > 2 else False)
 elif command  == "dump_db":
-    dump_db(github_client, repos)
+    dump_db(github_client, config, repos)
 else:
     print("Invalid argument")
 

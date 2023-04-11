@@ -1,6 +1,6 @@
 import time
 
-def create_real_prs(github_client, repos, dry_run):
+def create_real_prs(github_client, config, repos, dry_run):
     for repo in repos.values():
         try:
             if not repo.has_advanced_info:

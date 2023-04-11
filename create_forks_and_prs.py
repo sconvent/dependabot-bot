@@ -49,7 +49,7 @@ def create_configs(files, ecosystem):
     configs = configs[:3]
     return configs
 
-def create_forks_and_prs(github_client, repos, dry_run):
+def create_forks_and_prs(github_client, config, repos, dry_run):
     for repo in repos.values():
         try:
             if not repo.has_advanced_info:
