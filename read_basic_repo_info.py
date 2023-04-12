@@ -16,6 +16,8 @@ def read_basic_repo_info(github_client, config, repos, max_count):
         for repo in result:
             if len(repos.keys()) >= max_count:
                 break
+            if repo.full_name in config.ignored_repos:
+                continue
             if repo.full_name not in repos:
                 repos[repo.full_name] = Repo(repo_info = repo)
                 print(f"{count}: Added repo {repo.full_name} to db")

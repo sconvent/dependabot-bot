@@ -19,7 +19,7 @@ def read_advanced_repo_info(github_client: Github, config, repos):
     count = 0
     for repo in repos.values():
         try:
-            if not repo.has_advanced_info:
+            if not repo.has_advanced_info and repo.full_name not in config.ignored_repos:
                 # save local_db every 50 repos
                 count += 1
                 if count % 50 == 0:
@@ -131,7 +131,7 @@ def read_advanced_repo_info(github_client: Github, config, repos):
                 # Delete folder
                 shutil.rmtree(folder_path)
             else:
-                print(f"Advanced info for repo {repo.full_name} already read or no relevant languages found")  
+                print(f"Advanced info for repo {repo.full_name} already read, no relevant languages found or repo ignored.")  
         except Exception as e:
             print(f"Error while reading advanced info for repo {repo.full_name}: {e}")      
 

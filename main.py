@@ -1,6 +1,7 @@
 import pickle
 import os
 from github import Github
+from config import Config
 from read_basic_repo_info import read_basic_repo_info
 from read_advanced_repo_info import read_advanced_repo_info
 from create_forks_and_prs import create_forks_and_prs
@@ -14,12 +15,15 @@ import json
 warnings.filterwarnings('ignore')
 
 # load config.json
-config = None
+loaded_config = None
 try:
     with open('config.json') as f:
-        config = json.load(f)
+        loaded_config = json.load(f)
 except:
     print("Could not load config.json")
+    exit(1)
+
+config = Config(loaded_config)
 
 # load local_db
 repos = dict()

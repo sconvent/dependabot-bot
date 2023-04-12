@@ -52,6 +52,10 @@ def create_configs(files, ecosystem):
 def create_forks_and_prs(github_client, config, repos, dry_run):
     for repo in repos.values():
         try:
+            if repo.full_name in config.ignored_repos:
+                print(f"Skipping {repo.full_name} because it is in the ignore list")
+                continue
+            
             if not repo.has_advanced_info:
                 print(f"Skipping {repo.full_name} because it has no advanced info")
                 continue
