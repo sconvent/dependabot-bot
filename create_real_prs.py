@@ -21,9 +21,9 @@ def create_real_prs(github_client, config, repos, dry_run):
 
             # safety net: only create pr if no previous pr exists
             original_repo = github_client.get_repo(repo.full_name)
-            # get all open and closed prs by the user project-maintenance-bot
-            closed_prs = original_repo.get_pulls(state='closed', head='project-maintenance-bot:add-dependabot')
-            open_prs = original_repo.get_pulls(state='open', head='project-maintenance-bot:add-dependabot')
+            # get all open and closed prs by the user
+            closed_prs = original_repo.get_pulls(state='closed', head=f'{config.user_name}:add-dependabot')
+            open_prs = original_repo.get_pulls(state='open', head=f'{config.user_name}:add-dependabot')
             # if there are any open or closed prs, skip
             if closed_prs.totalCount > 0 or open_prs.totalCount > 0:
                 print(f"Skipping {repo.full_name} because it already has a PR")
@@ -31,24 +31,24 @@ def create_real_prs(github_client, config, repos, dry_run):
 
             # Make sure fork  exists
             try:
-                potentially_existing_fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+                potentially_existing_fork = github_client.get_repo(f"{config.user_name}/{repo.name}")
             except:
                 print("Fork does not exist")
                 continue
 
             # Get fork
-            fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+            fork = github_client.get_repo(f"{config.user_name}/{repo.name}")
             # Search for PRs from the bot
             fork.open_prs = fork.get_pulls(state='open', sort='created')
             print(f"Found PR for {repo.full_name}")
             # Get comments from PRs
             for pr in fork.open_prs:
-                if pr.user.login == "project-maintenance-bot":
+                if pr.user.login == f"{config.user_name}":
                     comments = pr.get_issue_comments()
                     for comment in comments:
-                        if comment.user.login == "sconvent" and comment.body == "LGTM":
+                        if comment.user.login == f"{config.approving_user}" and comment.body == "LGTM":
                             print(f"Creating real PR for {repo.full_name}")
-                            create_pr(github_client, repo, fork, pr.body, dry_run)
+                            create_pr(github_client, config, repo, fork, pr.body, dry_run)
                             # wait 60 seconds
                             time.sleep(60)
                             break
@@ -59,7 +59,7 @@ def create_real_prs(github_client, config, repos, dry_run):
             print(f"Error while processing {repo.full_name}: {e}")
             time.sleep(5)
 
-def create_pr(github_client, repo, fork, comment, dry_run):
+def create_pr(github_client, config, repo, fork, comment, dry_run):
     if not dry_run:
         # Get repo
         github_repo = github_client.get_repo(repo.full_name)
@@ -67,7 +67,7 @@ def create_pr(github_client, repo, fork, comment, dry_run):
         github_repo.create_pull(
             title="Add Dependabot config",
             body=comment.body,
-            head=f"project-maintenance-bot:add-dependabot",
+            head=f"{config.user_name}:add-dependabot",
             base=repo.default_branch,
         )
         print(f"Created real PR for {repo.full_name}")

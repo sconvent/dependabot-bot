@@ -98,7 +98,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
             if not dry_run:
                 # Check if fork already exists
                 try:
-                    potentially_existing_fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+                    potentially_existing_fork = github_client.get_repo(f"{config.user_name}/{repo.name}")
                     print("Fork already exists")
                 except:
                     # If not, create fork
@@ -109,7 +109,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                     time.sleep(30)
 
                 # Get fork
-                fork = github_client.get_repo(f"project-maintenance-bot/{repo.name}")
+                fork = github_client.get_repo(f"{config.user_name}/{repo.name}")
                 # Get default branch
                 print(fork.default_branch)
                 try:
@@ -141,7 +141,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                 time.sleep(3)
 
                 # Create pull request if not exists
-                if len(list(fork.get_pulls(state='open', head='project-maintenance-bot:add-dependabot'))) == 0:
+                if len(list(fork.get_pulls(state='open', head=f'{config.user_name}:add-dependabot'))) == 0:
                     print(f"Creating pull request for {repo.full_name}")
                     fork.create_pull(title="Add dependabot.yml", body=render_pr_message(), head="add-dependabot", base=fork.default_branch)
                     time.sleep(5)
