@@ -4,5 +4,6 @@ __pycache__/
 
 local_db
 db_dump.json
+config.json
 
 repos/
