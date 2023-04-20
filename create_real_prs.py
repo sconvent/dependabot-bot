@@ -22,8 +22,8 @@ def create_real_prs(github_client, config, repos, dry_run):
             # safety net: only create pr if no previous pr exists
             original_repo = github_client.get_repo(repo.full_name)
             # get all open and closed prs by the user
-            closed_prs = original_repo.get_pulls(state='closed', head=f'{config.user_name}:add-dependabot')
-            open_prs = original_repo.get_pulls(state='open', head=f'{config.user_name}:add-dependabot')
+            closed_prs = original_repo.get_pulls(state='closed', head=f'{config.user_name}:{config.branch_name}')
+            open_prs = original_repo.get_pulls(state='open', head=f'{config.user_name}:{config.branch_name}')
             # if there are any open or closed prs, skip
             if closed_prs.totalCount > 0 or open_prs.totalCount > 0:
                 print(f"Skipping {repo.full_name} because it already has a PR")
@@ -67,7 +67,7 @@ def create_pr(github_client, config, repo, fork, comment, dry_run):
         github_repo.create_pull(
             title="Add Dependabot config",
             body=comment.body,
-            head=f"{config.user_name}:add-dependabot",
+            head=f"{config.user_name}:{config.branch_name}",
             base=repo.default_branch,
         )
         print(f"Created real PR for {repo.full_name}")

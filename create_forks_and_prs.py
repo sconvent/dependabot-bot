@@ -113,7 +113,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                 # Get default branch
                 print(fork.default_branch)
                 try:
-                    branch = fork.get_git_ref("heads/add-dependabot")
+                    branch = fork.get_git_ref(f"heads/{config.branch_name}")
                     print("Deleting already existing branch")
                     branch.delete()
                     print("Deleted already existing branch")
@@ -125,7 +125,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
 
                 # Create branch
                 print(f"Creating branch for {repo.full_name}")
-                fork.create_git_ref(ref=f"refs/heads/add-dependabot", sha=sha)
+                fork.create_git_ref(ref=f"refs/heads/{config.branch_name}", sha=sha)
                 time.sleep(5)
 
             # Create dependabot.yml
@@ -136,14 +136,14 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                 print("END CONTENT")
             
             if not dry_run:
-                print(f"Creating dependabot.yml for {repo.full_name} on branch add-dependabot")
-                fork.create_file(path=".github/dependabot.yml", message="Add dependabot.yml", content=content, branch="add-dependabot")
+                print(f"Creating dependabot.yml for {repo.full_name} on branch {config.branch_name}")
+                fork.create_file(path=".github/dependabot.yml", message="Add dependabot.yml", content=content, branch={config.branch_name})
                 time.sleep(3)
 
                 # Create pull request if not exists
                 if len(list(fork.get_pulls(state='open', head=f'{config.user_name}:add-dependabot'))) == 0:
                     print(f"Creating pull request for {repo.full_name}")
-                    fork.create_pull(title="Add dependabot.yml", body=render_pr_message(), head="add-dependabot", base=fork.default_branch)
+                    fork.create_pull(title="Add dependabot.yml", body=render_pr_message(), head={config.branch_name}, base=fork.default_branch)
                     time.sleep(5)
                 else:
                     print(f"Pull request already exists for {repo.full_name}")
