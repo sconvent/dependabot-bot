@@ -18,6 +18,17 @@ A Github Personal Access Token is needed for some steps. It needs read access to
 
 Store the token in the environment variable `GITHUB_TOKEN`
 
+## Config
+A config.json file of the following format must be placed in the root folder:
+```
+{
+    "ignored_repos": [],
+    "user_name": "<user_name>",
+    "branch_name": "<branch_name>",
+    "approving_user": "<approving_user>"
+}
+```
+
 ## Steps
 
 - Scan for repositories (sorted by number of stars) with: `python3 main.py read_basic_repo_info <max_count>`
