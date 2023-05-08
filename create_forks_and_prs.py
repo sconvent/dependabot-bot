@@ -99,13 +99,13 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                 # Check if fork already exists
                 try:
                     potentially_existing_fork = github_client.get_repo(f"{config.user_name}/{repo.name}")
-                    print("Fork already exists")
+                    print(f"Fork for {config.user_name}/{repo.name} already exists")
                 except:
                     # If not, create fork
                     print(f"Creating fork for {repo.full_name}")
                     github_repo = github_client.get_repo(repo.full_name)
                     github_repo.create_fork()
-                    print("Waiting 30 seconds for fork to be created")
+                    print(f"Waiting 30 seconds for fork to be created for {repo.full_name}")
                     time.sleep(30)
 
                 # Get fork
@@ -114,11 +114,10 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                 print(fork.default_branch)
                 try:
                     branch = fork.get_git_ref(f"heads/{config.branch_name}")
-                    print("Deleting already existing branch")
+                    print(f"Deleting already existing branch  for {repo.full_name}")
                     branch.delete()
-                    print("Deleted already existing branch")
                 except:
-                    print("Branch does not exist yet")
+                    print(f"Branch does not exist yet for {repo.full_name}")
                     pass
                 time.sleep(5)
                 sha = fork.get_branch(fork.default_branch).commit.sha
@@ -131,7 +130,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
             # Create dependabot.yml
             content = render_dependabot_config(configs)
             if dry_run:
-                print("CONTENT:")
+                print(f"CONTENT for {repo.full_name}")
                 print(content)
                 print("END CONTENT")
             
@@ -149,7 +148,7 @@ def create_forks_and_prs(github_client, config, repos, dry_run):
                     print(f"Pull request already exists for {repo.full_name}")
                 
                 # Wait 50 seconds
-                print("Waiting 50 seconds")
+                print("Waiting 50 seconds after PR creation for {repo.full_name}")
                 time.sleep(50)
         except Exception as e:
             print(f"Error while processing {repo.full_name}: {e}")
